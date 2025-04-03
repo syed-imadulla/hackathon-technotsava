@@ -3,40 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Editable Table</title>
+    <title>Advanced Data Table</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
     <style>
         :root {
             --primary: #4285f4;
             --secondary: #34a853;
             --danger: #ea4335;
+            --warning: #fbbc05;
+            --info: #17a2b8;
             --light: #f8f9fa;
             --dark: #343a40;
             --border: #dee2e6;
             --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --text-light: #495057;
+            --text-dark: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-dark: #2c3e50;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #34495e;
+            --border-light: #dee2e6;
+            --border-dark: #495563;
+        }
+
+        /* Dark mode variables */
+        .dark-mode {
+            --light: #495563;
+            --dark: #f8f9fa;
+            --border: #495563;
+            --text-light: #f8f9fa;
+            --text-dark: #495057;
+            --bg-light: #2c3e50;
+            --bg-dark: #ffffff;
+            --card-bg-light: #34495e;
+            --card-bg-dark: #ffffff;
+            --border-light: #495563;
+            --border-dark: #dee2e6;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
+            background-color: var(--bg-light);
+            color: var(--text-light);
             padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .theme-toggle-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
         }
 
         .container {
             max-width: 100%;
             margin: 0 auto;
-            background: white;
+            background: var(--card-bg-light);
             border-radius: 8px;
             box-shadow: var(--shadow);
             padding: 20px;
             overflow: hidden;
+        }
+
+        .dark-mode .container {
+            background: var(--card-bg-dark);
         }
 
         .toolbar {
@@ -57,6 +101,15 @@
             gap: 6px;
             font-size: 14px;
             transition: all 0.3s;
+            background-color: var(--light);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .dark-mode .btn {
+            background-color: var(--light);
+            color: var(--text-light);
+            border-color: var(--border-dark);
         }
 
         .btn i {
@@ -83,6 +136,26 @@
             color: white;
         }
 
+        .danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-text {
+            display: inline;
+        }
+
+        @media (max-width: 768px) {
+            .btn-text {
+                display: none;
+            }
+        }
+
         .search-container {
             position: relative;
             flex-grow: 1;
@@ -94,7 +167,11 @@
             left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6c757d;
+            color: var(--text-light);
+        }
+
+        .dark-mode .search-container i {
+            color: var(--text-dark);
         }
 
         .search-container input {
@@ -103,6 +180,37 @@
             border: 1px solid var(--border);
             border-radius: 4px;
             font-size: 14px;
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .search-container input {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+
+        .column-filter-container {
+            display: flex;
+            gap: 10px;
+            min-width: 250px;
+        }
+
+        .column-filter-container select,
+        .column-filter-container input {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .column-filter-container select,
+        .dark-mode .column-filter-container input {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
         }
 
         .table-container {
@@ -110,6 +218,11 @@
             margin-bottom: 20px;
             border: 1px solid var(--border);
             border-radius: 4px;
+            max-height: calc(100vh - 300px);
+        }
+
+        .dark-mode .table-container {
+            border-color: var(--border-dark);
         }
 
         table {
@@ -122,6 +235,16 @@
             text-align: left;
             border-bottom: 1px solid var(--border);
             min-width: 150px;
+            border-right: 1px solid var(--border);
+        }
+
+        .dark-mode th,
+        .dark-mode td {
+            border-color: var(--border-dark);
+        }
+
+        th:last-child, td:last-child {
+            border-right: none;
         }
 
         th {
@@ -129,6 +252,12 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            color: var(--text-light);
+        }
+
+        .dark-mode th {
+            background-color: var(--light);
+            color: var(--text-light);
         }
 
         th .header-content {
@@ -140,11 +269,15 @@
         .column-menu-btn {
             background: none;
             border: none;
-            color: #666;
+            color: var(--text-light);
             cursor: pointer;
             padding: 0 5px;
             margin-left: 5px;
             visibility: hidden;
+        }
+
+        .dark-mode .column-menu-btn {
+            color: var(--text-dark);
         }
 
         th:hover .column-menu-btn {
@@ -152,14 +285,21 @@
         }
 
         .column-menu {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
+            position: fixed;
+            background: var(--card-bg-light);
+            border: 1px solid var(--border);
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
             min-width: 220px;
             display: none;
+            color: var(--text-light);
+        }
+
+        .dark-mode .column-menu {
+            background: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
         }
 
         .column-menu button {
@@ -170,10 +310,15 @@
             background: none;
             border: none;
             cursor: pointer;
+            color: inherit;
         }
 
         .column-menu button:hover {
-            background-color: #f5f5f5;
+            background-color: var(--light);
+        }
+
+        .dark-mode .column-menu button:hover {
+            background-color: var(--light);
         }
 
         .column-menu button i {
@@ -184,24 +329,35 @@
 
         .menu-divider {
             height: 1px;
-            background-color: #eee;
+            background-color: var(--border);
             margin: 5px 0;
         }
 
-        .property-type-menu {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
+        .dark-mode .menu-divider {
+            background-color: var(--border-dark);
+        }
+
+        .data-type-menu {
+            position: fixed;
+            background: var(--card-bg-light);
+            border: 1px solid var(--border);
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 101;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
             min-width: 180px;
             display: none;
             left: 100%;
             top: 0;
+            color: var(--text-light);
         }
 
-        .property-type-menu button {
+        .dark-mode .data-type-menu {
+            background: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .data-type-menu button {
             display: block;
             width: 100%;
             padding: 8px 12px;
@@ -209,13 +365,18 @@
             background: none;
             border: none;
             cursor: pointer;
+            color: inherit;
         }
 
-        .property-type-menu button:hover {
-            background-color: #f5f5f5;
+        .data-type-menu button:hover {
+            background-color: var(--light);
         }
 
-        .property-type-menu button i {
+        .dark-mode .data-type-menu button:hover {
+            background-color: var(--light);
+        }
+
+        .data-type-menu button i {
             margin-right: 8px;
             width: 20px;
             text-align: center;
@@ -223,6 +384,11 @@
 
         td {
             vertical-align: middle;
+            color: var(--text-light);
+        }
+
+        .dark-mode td {
+            color: var(--text-dark);
         }
 
         td.editable {
@@ -234,11 +400,17 @@
             background-color: rgba(66, 133, 244, 0.1);
         }
 
+        .actions-column {
+            width: 120px;
+            text-align: center;
+        }
+
         .pagination {
             display: flex;
             align-items: center;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         #pageSizeSelect {
@@ -246,6 +418,24 @@
             border-radius: 4px;
             border: 1px solid var(--border);
             margin-left: 10px;
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode #pageSizeSelect {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+
+        .total-records {
+            margin-left: auto;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .dark-mode .total-records {
+            color: var(--text-dark);
         }
 
         /* Modal Styles */
@@ -261,18 +451,28 @@
         }
 
         .modal-content {
-            background-color: white;
+            background-color: var(--card-bg-light);
             margin: 10% auto;
             padding: 20px;
             border-radius: 8px;
             width: 400px;
             max-width: 90%;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            color: var(--text-light);
+        }
+
+        .dark-mode .modal-content {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
         }
 
         .modal h3 {
             margin-bottom: 20px;
-            color: var(--dark);
+            color: var(--text-light);
+        }
+
+        .dark-mode .modal h3 {
+            color: var(--text-dark);
         }
 
         .close {
@@ -280,11 +480,15 @@
             font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            color: #6c757d;
+            color: var(--text-light);
+        }
+
+        .dark-mode .close {
+            color: var(--text-dark);
         }
 
         .close:hover {
-            color: var(--dark);
+            color: var(--danger);
         }
 
         .form-group {
@@ -295,6 +499,11 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .dark-mode .form-group label {
+            color: var(--text-dark);
         }
 
         .form-group input,
@@ -303,6 +512,15 @@
             padding: 8px;
             border: 1px solid var(--border);
             border-radius: 4px;
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .form-group input,
+        .dark-mode .form-group select {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
         }
 
         .add-column-btn {
@@ -321,19 +539,76 @@
             font-size: inherit;
             font-family: inherit;
             width: 100%;
+            background-color: var(--card-bg-light);
+            color: var(--text-light);
         }
 
-        .range-slider {
-            width: 100%;
-            padding: 10px;
+        .dark-mode .title-input {
+            background-color: var(--card-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
         }
 
-        .range-slider input {
-            width: 100%;
+        .range-slider-container {
+            padding: 20px 10px;
         }
 
-        .actions-column {
-            width: 80px;
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: var(--text-light);
+        }
+
+        .dark-mode .range-values {
+            color: var(--text-dark);
+        }
+
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
         }
 
         /* Responsive */
@@ -343,7 +618,7 @@
                 align-items: stretch;
             }
             
-            .search-container {
+            .search-container, .column-filter-container {
                 width: 100%;
             }
             
@@ -359,34 +634,78 @@
 
         @media (max-width: 480px) {
             .pagination {
-                flex-wrap: wrap;
+                flex-direction: column;
+                gap: 10px;
             }
+            
+            .total-records {
+                margin-left: 0;
+                text-align: center;
+            }
+        }
+
+        /* noUiSlider overrides */
+        .noUi-target {
+            background: var(--light);
+            border: 1px solid var(--border);
+        }
+
+        .dark-mode .noUi-target {
+            background: var(--light);
+            border-color: var(--border-dark);
+        }
+
+        .noUi-connect {
+            background: var(--primary);
+        }
+
+        .noUi-handle {
+            background: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .noUi-handle:after, .noUi-handle:before {
+            background: white;
         }
     </style>
 </head>
-<body>
+<body class="light-mode">
+    <div class="theme-toggle-container">
+        <button id="themeToggle" class="btn">
+            <i class="fas fa-moon"></i> <span class="btn-text">Dark Mode</span>
+        </button>
+    </div>
+    
     <div class="container">
         <div class="toolbar">
             <button id="addRowBtn" class="btn primary" title="Add Row">
-                <i class="fas fa-plus"></i> Add Row
+                <i class="fas fa-plus"></i> <span class="btn-text">Add Row</span>
             </button>
-            <button id="exportBtn" class="btn success" title="Export to CSV">
-                <i class="fas fa-file-export"></i> Export
+            <button id="saveChangesBtn" class="btn success" title="Save Changes">
+                <i class="fas fa-save"></i> <span class="btn-text">Save</span>
+            </button>
+            <button id="resetBtn" class="btn danger" title="Reset Table">
+                <i class="fas fa-undo"></i> <span class="btn-text">Reset</span>
+            </button>
+            <button id="exportBtn" class="btn secondary" title="Export to CSV">
+                <i class="fas fa-file-export"></i> <span class="btn-text">Export</span>
             </button>
             <div class="search-container">
                 <i class="fas fa-search"></i>
                 <input type="text" id="globalSearch" placeholder="Search all data...">
             </div>
+            <div class="column-filter-container">
+                <select id="columnFilterSelect">
+                    <option value="">Filter by column...</option>
+                </select>
+                <input type="text" id="columnFilterInput" placeholder="Filter value..." disabled>
+            </div>
         </div>
 
         <div class="table-container">
             <table id="dataTable">
-                <thead id="tableHeader">
-                    <!-- Columns will be generated dynamically -->
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Rows will be generated dynamically -->
-                </tbody>
+                <thead id="tableHeader"></thead>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
 
@@ -403,7 +722,9 @@
                 <option value="10" selected>10 rows</option>
                 <option value="20">20 rows</option>
                 <option value="50">50 rows</option>
+                <option value="100">100 rows</option>
             </select>
+            <span class="total-records">Total: 0 records</span>
         </div>
     </div>
 
@@ -421,7 +742,7 @@
                 <select id="columnType">
                     <option value="text">Text</option>
                     <option value="number">Number</option>
-                    <option value="currency">Currency</option>
+                    <option value="currency">Currency (INR)</option>
                     <option value="date">Date (dd-mm-yyyy)</option>
                     <option value="date-us">Date (mm-dd-yyyy)</option>
                     <option value="select">Dropdown</option>
@@ -436,9 +757,57 @@
         </div>
     </div>
 
+    <!-- Date Range Filter Modal -->
+    <div id="dateRangeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Date Range Filter</h3>
+            <div class="form-group">
+                <label>From:</label>
+                <input type="text" id="dateFrom" class="date-picker" placeholder="Select start date">
+            </div>
+            <div class="form-group">
+                <label>To:</label>
+                <input type="text" id="dateTo" class="date-picker" placeholder="Select end date">
+            </div>
+            <div class="form-group">
+                <button id="applyDateFilter" class="btn primary">Apply</button>
+                <button id="clearDateFilter" class="btn danger">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Number Range Filter Modal -->
+    <div id="numberRangeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Number Range Filter</h3>
+            <div class="form-group">
+                <label>Min:</label>
+                <input type="number" id="numberMin" placeholder="Minimum value">
+            </div>
+            <div class="form-group">
+                <label>Max:</label>
+                <input type="number" id="numberMax" placeholder="Maximum value">
+            </div>
+            <div class="range-slider-container">
+                <div id="rangeSlider"></div>
+                <div class="range-values">
+                    <span id="rangeMin">0</span>
+                    <span id="rangeMax">100</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="applyNumberFilter" class="btn primary">Apply</button>
+                <button id="clearNumberFilter" class="btn danger">Clear</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
     <script>
-        class EditableTable {
+        class AdvancedDataTable {
             constructor() {
                 this.table = document.getElementById('dataTable');
                 this.thead = document.getElementById('tableHeader');
@@ -452,10 +821,46 @@
                 this.filters = {};
                 this.activeColumnMenu = null;
                 this.editingTitle = null;
-                this.activePropertyMenu = null;
+                this.activeDataTypeMenu = null;
+                this.unsavedChanges = false;
+                this.activeColumnFilter = null;
+                this.dateFilterColumn = null;
+                this.numberFilterColumn = null;
+                this.rangeSlider = null;
                 
+                this.initThemeToggle();
+                this.loadData();
                 this.initTable();
                 this.setupEventListeners();
+                this.initRangeSlider();
+            }
+
+            initThemeToggle() {
+                const themeToggle = document.getElementById('themeToggle');
+                const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+                
+                // Check for saved theme preference or use system preference
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+                    document.body.classList.add('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> <span class="btn-text">Light Mode</span>';
+                }
+                
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+                    
+                    if (isDarkMode) {
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i> <span class="btn-text">Light Mode</span>';
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i> <span class="btn-text">Dark Mode</span>';
+                        localStorage.setItem('theme', 'light');
+                    }
+                    
+                    // Reinitialize flatpickr to apply dark mode
+                    this.initDatePickers();
+                });
             }
 
             initTable() {
@@ -464,26 +869,82 @@
                         { name: 'ID', type: 'number', editable: false },
                         { name: 'Name', type: 'text', editable: true },
                         { name: 'Age', type: 'number', editable: true },
-                        { name: 'Department', type: 'select', options: ['HR', 'IT', 'Finance'], editable: true },
+                        { name: 'Salary', type: 'currency', editable: true },
+                        { name: 'Join Date', type: 'date', editable: true },
+                        { name: 'Department', type: 'select', options: ['HR', 'IT', 'Finance', 'Marketing'], editable: true },
                         { name: 'Active', type: 'checkbox', editable: true }
                     ];
                     
-                    for (let i = 1; i <= 25; i++) {
+                    for (let i = 1; i <= 50; i++) {
+                        const joinDate = new Date();
+                        joinDate.setFullYear(joinDate.getFullYear() - Math.floor(Math.random() * 5));
+                        joinDate.setMonth(Math.floor(Math.random() * 12));
+                        
                         this.data.push({
                             'ID': i,
                             'Name': `Employee ${i}`,
                             'Age': Math.floor(Math.random() * 30) + 20,
-                            'Department': ['HR', 'IT', 'Finance'][Math.floor(Math.random() * 3)],
-                            'Active': Math.random() > 0.5
+                            'Salary': Math.floor(Math.random() * 90000) + 30000,
+                            'Join Date': joinDate,
+                            'Department': ['HR', 'IT', 'Finance', 'Marketing'][Math.floor(Math.random() * 4)],
+                            'Active': Math.random() > 0.3
                         });
                     }
                 }
                 
                 this.renderTable();
+                this.initColumnFilterSelect();
+                this.initDatePickers();
+            }
+
+            initDatePickers() {
+                // Destroy existing flatpickr instances
+                document.querySelectorAll('.date-picker').forEach(fp => {
+                    if (fp._flatpickr) {
+                        fp._flatpickr.destroy();
+                    }
+                });
+                
+                // Initialize new flatpickr instances
+                flatpickr('.date-picker', {
+                    dateFormat: 'd-m-Y',
+                    allowInput: true,
+                    theme: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+                });
+            }
+
+            initRangeSlider() {
+                this.rangeSlider = document.getElementById('rangeSlider');
+                
+                noUiSlider.create(this.rangeSlider, {
+                    start: [0, 100],
+                    connect: true,
+                    range: {
+                        'min': 0,
+                        'max': 100
+                    }
+                });
+                
+                this.rangeSlider.noUiSlider.on('update', (values, handle) => {
+                    document.getElementById(handle === 0 ? 'rangeMin' : 'rangeMax').textContent = Math.round(values[handle]);
+                    document.getElementById(handle === 0 ? 'numberMin' : 'numberMax').value = Math.round(values[handle]);
+                });
+            }
+
+            updateRangeSlider(min, max) {
+                this.rangeSlider.noUiSlider.updateOptions({
+                    range: {
+                        'min': min,
+                        'max': max
+                    },
+                    start: [min, max]
+                });
             }
 
             setupEventListeners() {
                 document.getElementById('addRowBtn').addEventListener('click', () => this.addNewRow());
+                document.getElementById('saveChangesBtn').addEventListener('click', () => this.saveChanges());
+                document.getElementById('resetBtn').addEventListener('click', () => this.resetTable());
                 document.getElementById('exportBtn').addEventListener('click', () => this.exportToCSV());
                 document.getElementById('prevPage').addEventListener('click', () => this.changePage(-1));
                 document.getElementById('nextPage').addEventListener('click', () => this.changePage(1));
@@ -502,10 +963,115 @@
                         e.target.value === 'select' ? 'block' : 'none';
                 });
                 document.getElementById('confirmAddColumn').addEventListener('click', () => this.addNewColumn());
-                document.querySelector('.close').addEventListener('click', () => this.closeModal());
+                document.querySelectorAll('.close').forEach(closeBtn => {
+                    closeBtn.addEventListener('click', () => {
+                        document.querySelectorAll('.modal').forEach(modal => {
+                            modal.style.display = 'none';
+                        });
+                    });
+                });
+                document.getElementById('columnFilterSelect').addEventListener('change', (e) => {
+                    this.activeColumnFilter = e.target.value;
+                    const columnInput = document.getElementById('columnFilterInput');
+                    
+                    if (this.activeColumnFilter) {
+                        columnInput.disabled = false;
+                        columnInput.placeholder = `Filter ${this.activeColumnFilter}...`;
+                        
+                        const column = this.columns.find(c => c.name === this.activeColumnFilter);
+                        if (column.type === 'date') {
+                            columnInput.style.display = 'none';
+                            this.dateFilterColumn = this.activeColumnFilter;
+                            document.getElementById('dateRangeModal').style.display = 'block';
+                        } else if (column.type === 'number' || column.type === 'currency') {
+                            columnInput.style.display = 'none';
+                            this.numberFilterColumn = this.activeColumnFilter;
+                            
+                            // Get min and max values for the column
+                            const values = this.data.map(row => row[this.activeColumnFilter]);
+                            const min = Math.min(...values);
+                            const max = Math.max(...values);
+                            
+                            document.getElementById('numberMin').value = min;
+                            document.getElementById('numberMax').value = max;
+                            document.getElementById('rangeMin').textContent = min;
+                            document.getElementById('rangeMax').textContent = max;
+                            
+                            this.updateRangeSlider(min, max);
+                            document.getElementById('numberRangeModal').style.display = 'block';
+                        } else {
+                            columnInput.style.display = 'block';
+                            this.dateFilterColumn = null;
+                            this.numberFilterColumn = null;
+                        }
+                    } else {
+                        columnInput.disabled = true;
+                        columnInput.value = '';
+                        delete this.filters[this.activeColumnFilter];
+                        this.activeColumnFilter = null;
+                        this.renderTable();
+                    }
+                });
+                document.getElementById('columnFilterInput').addEventListener('input', (e) => {
+                    if (this.activeColumnFilter) {
+                        this.filters[this.activeColumnFilter] = e.target.value.toLowerCase();
+                        this.currentPage = 1;
+                        this.renderTable();
+                    }
+                });
+                document.getElementById('applyDateFilter').addEventListener('click', () => {
+                    const fromDate = document.getElementById('dateFrom').value;
+                    const toDate = document.getElementById('dateTo').value;
+                    
+                    if (this.dateFilterColumn) {
+                        this.filters[this.dateFilterColumn] = {
+                            from: fromDate,
+                            to: toDate
+                        };
+                        this.currentPage = 1;
+                        this.renderTable();
+                        document.getElementById('dateRangeModal').style.display = 'none';
+                    }
+                });
+                document.getElementById('clearDateFilter').addEventListener('click', () => {
+                    if (this.dateFilterColumn) {
+                        delete this.filters[this.dateFilterColumn];
+                        document.getElementById('dateFrom').value = '';
+                        document.getElementById('dateTo').value = '';
+                        this.currentPage = 1;
+                        this.renderTable();
+                        document.getElementById('dateRangeModal').style.display = 'none';
+                    }
+                });
+                document.getElementById('applyNumberFilter').addEventListener('click', () => {
+                    const min = parseFloat(document.getElementById('numberMin').value);
+                    const max = parseFloat(document.getElementById('numberMax').value);
+                    
+                    if (this.numberFilterColumn && !isNaN(min) && !isNaN(max)) {
+                        this.filters[this.numberFilterColumn] = {
+                            min: min,
+                            max: max
+                        };
+                        this.currentPage = 1;
+                        this.renderTable();
+                        document.getElementById('numberRangeModal').style.display = 'none';
+                    }
+                });
+                document.getElementById('clearNumberFilter').addEventListener('click', () => {
+                    if (this.numberFilterColumn) {
+                        delete this.filters[this.numberFilterColumn];
+                        document.getElementById('numberMin').value = '';
+                        document.getElementById('numberMax').value = '';
+                        this.currentPage = 1;
+                        this.renderTable();
+                        document.getElementById('numberRangeModal').style.display = 'none';
+                    }
+                });
                 window.addEventListener('click', (e) => {
-                    if (e.target === document.getElementById('columnModal')) {
-                        this.closeModal();
+                    if (e.target.classList.contains('modal')) {
+                        document.querySelectorAll('.modal').forEach(modal => {
+                            modal.style.display = 'none';
+                        });
                     }
                     if (e.target.closest('.column-menu-btn') === null && 
                         e.target.closest('.column-menu') === null && 
@@ -513,11 +1079,11 @@
                         this.activeColumnMenu.style.display = 'none';
                         this.activeColumnMenu = null;
                     }
-                    if (e.target.closest('.property-type-btn') === null && 
-                        e.target.closest('.property-type-menu') === null && 
-                        this.activePropertyMenu) {
-                        this.activePropertyMenu.style.display = 'none';
-                        this.activePropertyMenu = null;
+                    if (e.target.closest('.data-type-btn') === null && 
+                        e.target.closest('.data-type-menu') === null && 
+                        this.activeDataTypeMenu) {
+                        this.activeDataTypeMenu.style.display = 'none';
+                        this.activeDataTypeMenu = null;
                     }
                     if (this.editingTitle && !e.target.closest('.title-input')) {
                         this.saveTitleEdit();
@@ -529,18 +1095,79 @@
                             this.activeColumnMenu.style.display = 'none';
                             this.activeColumnMenu = null;
                         }
-                        if (this.activePropertyMenu) {
-                            this.activePropertyMenu.style.display = 'none';
-                            this.activePropertyMenu = null;
+                        if (this.activeDataTypeMenu) {
+                            this.activeDataTypeMenu.style.display = 'none';
+                            this.activeDataTypeMenu = null;
                         }
                         if (this.editingTitle) {
                             this.saveTitleEdit();
                         }
+                        document.querySelectorAll('.modal').forEach(modal => {
+                            modal.style.display = 'none';
+                        });
                     }
                     if (e.key === 'Enter' && this.editingTitle) {
                         this.saveTitleEdit();
                     }
                 });
+            }
+
+            initColumnFilterSelect() {
+                const select = document.getElementById('columnFilterSelect');
+                select.innerHTML = '<option value="">Filter by column...</option>';
+                
+                this.columns.forEach(col => {
+                    if (col.name !== 'ID' && col.name !== 'Active') { // Skip some columns
+                        const option = document.createElement('option');
+                        option.value = col.name;
+                        option.textContent = col.name;
+                        select.appendChild(option);
+                    }
+                });
+            }
+
+            saveData() {
+                const dataToSave = {
+                    columns: this.columns,
+                    data: this.data,
+                    sortColumn: this.sortColumn,
+                    sortDirection: this.sortDirection,
+                    pageSize: this.pageSize
+                };
+                localStorage.setItem('advancedDataTable', JSON.stringify(dataToSave));
+            }
+
+            loadData() {
+                const savedData = localStorage.getItem('advancedDataTable');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    this.columns = parsedData.columns || [];
+                    this.data = parsedData.data || [];
+                    this.sortColumn = parsedData.sortColumn || null;
+                    this.sortDirection = parsedData.sortDirection || 'asc';
+                    this.pageSize = parsedData.pageSize || 10;
+                }
+            }
+
+            saveChanges() {
+                this.saveData();
+                this.unsavedChanges = false;
+                alert('Changes saved successfully! They will persist after page refresh.');
+            }
+
+            resetTable() {
+                if (confirm('Are you sure you want to reset the table? All changes will be lost.')) {
+                    localStorage.removeItem('advancedDataTable');
+                    this.columns = [];
+                    this.data = [];
+                    this.sortColumn = null;
+                    this.sortDirection = 'asc';
+                    this.pageSize = 10;
+                    this.currentPage = 1;
+                    this.filters = {};
+                    this.unsavedChanges = false;
+                    this.initTable();
+                }
             }
 
             renderTable() {
@@ -565,6 +1192,15 @@
                     titleSpan.textContent = col.name;
                     titleSpan.addEventListener('dblclick', () => this.editTitle(titleSpan, col, colIndex));
                     
+                    const sortIcon = document.createElement('span');
+                    sortIcon.className = 'sort-icon';
+                    if (this.sortColumn === col.name) {
+                        sortIcon.innerHTML = this.sortDirection === 'asc' ? 
+                            ' <i class="fas fa-sort-up"></i>' : ' <i class="fas fa-sort-down"></i>';
+                    } else {
+                        sortIcon.innerHTML = ' <i class="fas fa-sort" style="opacity:0.3"></i>';
+                    }
+                    
                     const menuBtn = document.createElement('button');
                     menuBtn.className = 'column-menu-btn';
                     menuBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
@@ -576,7 +1212,19 @@
                         <button class="sort-asc"><i class="fas fa-sort-amount-up"></i> Sort Ascending</button>
                         <button class="sort-desc"><i class="fas fa-sort-amount-down"></i> Sort Descending</button>
                         <div class="menu-divider"></div>
-                        <button class="property-type-btn"><i class="fas fa-tag"></i> Property Type: ${this.getTypeDisplay(col.type)}</button>
+                        <button class="data-type-btn"><i class="fas fa-tag"></i> Data Type: ${this.getTypeDisplay(col.type)}</button>
+                        ${col.type === 'number' || col.type === 'currency' ? 
+                            `<button class="range-filter-btn"><i class="fas fa-sliders-h"></i> Range Filter</button>` : ''}
+                        ${col.type === 'date' ? 
+                            `<button class="date-filter-btn"><i class="fas fa-calendar"></i> Date Range Filter</button>` : ''}
+                        <div class="menu-divider"></div>
+                        <div style="padding: 8px 12px; display: flex; align-items: center;">
+                            <span>Editable:</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" ${col.editable ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                         <div class="menu-divider"></div>
                         <button class="insert-left"><i class="fas fa-arrow-left"></i> Insert Left</button>
                         <button class="insert-right"><i class="fas fa-arrow-right"></i> Insert Right</button>
@@ -584,63 +1232,113 @@
                         <button class="delete-column"><i class="fas fa-trash"></i> Delete Column</button>
                     `;
                     
-                    // Create property type menu
-                    const propertyMenu = document.createElement('div');
-                    propertyMenu.className = 'property-type-menu';
-                    propertyMenu.innerHTML = `
+                    // Create data type menu
+                    const dataTypeMenu = document.createElement('div');
+                    dataTypeMenu.className = 'data-type-menu';
+                    dataTypeMenu.innerHTML = `
                         <button class="set-type" data-type="text"><i class="fas fa-font"></i> Text</button>
                         <button class="set-type" data-type="number"><i class="fas fa-hashtag"></i> Number</button>
-                        <button class="set-type" data-type="currency"><i class="fas fa-dollar-sign"></i> Currency</button>
+                        <button class="set-type" data-type="currency"><i class="fas fa-rupee-sign"></i> Currency (INR)</button>
                         <button class="set-type" data-type="select"><i class="fas fa-list"></i> Select</button>
                         <button class="set-type" data-type="checkbox"><i class="fas fa-check-square"></i> Checkbox</button>
                         <button class="set-type" data-type="date"><i class="fas fa-calendar"></i> Date (dd-mm-yyyy)</button>
                         <button class="set-type" data-type="date-us"><i class="fas fa-calendar"></i> Date (mm-dd-yyyy)</button>
                     `;
                     
+                    titleSpan.appendChild(sortIcon);
                     headerContent.appendChild(titleSpan);
                     headerContent.appendChild(menuBtn);
                     th.appendChild(headerContent);
                     th.appendChild(menu);
-                    th.appendChild(propertyMenu);
+                    th.appendChild(dataTypeMenu);
                     
                     menuBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
+                        e.preventDefault();
                         if (this.activeColumnMenu) {
                             this.activeColumnMenu.style.display = 'none';
                         }
+                        
+                        // Calculate position to ensure menu doesn't overlap with header
+                        const btnRect = menuBtn.getBoundingClientRect();
+                        const menuHeight = 350; // Approximate menu height
+                        const spaceBelow = window.innerHeight - btnRect.bottom;
+                        
+                        if (spaceBelow < menuHeight && btnRect.top > menuHeight) {
+                            // Show menu above the button if there's not enough space below
+                            menu.style.top = `${btnRect.top + window.scrollY - menuHeight}px`;
+                        } else {
+                            // Show menu below the button
+                            menu.style.top = `${btnRect.bottom + window.scrollY}px`;
+                        }
+                        
+                        menu.style.position = 'fixed';
+                        menu.style.left = `${btnRect.left + window.scrollX}px`;
                         menu.style.display = 'block';
                         this.activeColumnMenu = menu;
                         
-                        // Position menu near the button
-                        const btnRect = menuBtn.getBoundingClientRect();
-                        menu.style.position = 'fixed';
-                        menu.style.top = `${btnRect.bottom + 5}px`;
-                        menu.style.left = `${btnRect.left}px`;
+                        // Set up toggle switch event
+                        const toggle = menu.querySelector('.toggle-switch input');
+                        toggle.addEventListener('change', () => {
+                            col.editable = toggle.checked;
+                            this.unsavedChanges = true;
+                            this.renderTable();
+                        });
+                        
+                        // Set up range filter button
+                        const rangeFilterBtn = menu.querySelector('.range-filter-btn');
+                        if (rangeFilterBtn) {
+                            rangeFilterBtn.addEventListener('click', () => {
+                                this.numberFilterColumn = col.name;
+                                const values = this.data.map(row => row[col.name]);
+                                const min = Math.min(...values);
+                                const max = Math.max(...values);
+                                
+                                document.getElementById('numberMin').value = min;
+                                document.getElementById('numberMax').value = max;
+                                document.getElementById('rangeMin').textContent = min;
+                                document.getElementById('rangeMax').textContent = max;
+                                
+                                this.updateRangeSlider(min, max);
+                                document.getElementById('numberRangeModal').style.display = 'block';
+                                menu.style.display = 'none';
+                            });
+                        }
+                        
+                        // Set up date filter button
+                        const dateFilterBtn = menu.querySelector('.date-filter-btn');
+                        if (dateFilterBtn) {
+                            dateFilterBtn.addEventListener('click', () => {
+                                this.dateFilterColumn = col.name;
+                                document.getElementById('dateRangeModal').style.display = 'block';
+                                menu.style.display = 'none';
+                            });
+                        }
                     });
                     
-                    // Property type button event
-                    const propertyTypeBtn = menu.querySelector('.property-type-btn');
-                    propertyTypeBtn.addEventListener('click', (e) => {
+                    // Data type button event
+                    const dataTypeBtn = menu.querySelector('.data-type-btn');
+                    dataTypeBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        if (this.activePropertyMenu) {
-                            this.activePropertyMenu.style.display = 'none';
+                        if (this.activeDataTypeMenu) {
+                            this.activeDataTypeMenu.style.display = 'none';
                         }
-                        propertyMenu.style.display = 'block';
-                        this.activePropertyMenu = propertyMenu;
+                        dataTypeMenu.style.display = 'block';
+                        this.activeDataTypeMenu = dataTypeMenu;
                         
-                        const btnRect = propertyTypeBtn.getBoundingClientRect();
-                        propertyMenu.style.position = 'fixed';
-                        propertyMenu.style.top = `${btnRect.top}px`;
-                        propertyMenu.style.left = `${btnRect.right}px`;
+                        const btnRect = dataTypeBtn.getBoundingClientRect();
+                        dataTypeMenu.style.position = 'fixed';
+                        dataTypeMenu.style.top = `${btnRect.top + window.scrollY}px`;
+                        dataTypeMenu.style.left = `${btnRect.right + window.scrollX}px`;
                     });
                     
                     // Set type events
-                    propertyMenu.querySelectorAll('.set-type').forEach(btn => {
+                    dataTypeMenu.querySelectorAll('.set-type').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation();
                             const newType = btn.dataset.type;
                             this.changeColumnType(colIndex, newType);
-                            propertyMenu.style.display = 'none';
+                            dataTypeMenu.style.display = 'none';
                             menu.style.display = 'none';
                         });
                     });
@@ -648,6 +1346,7 @@
                     menu.querySelector('.sort-asc').addEventListener('click', () => {
                         this.sortColumn = col.name;
                         this.sortDirection = 'asc';
+                        this.unsavedChanges = true;
                         this.renderTable();
                         menu.style.display = 'none';
                     });
@@ -655,6 +1354,7 @@
                     menu.querySelector('.sort-desc').addEventListener('click', () => {
                         this.sortColumn = col.name;
                         this.sortDirection = 'desc';
+                        this.unsavedChanges = true;
                         this.renderTable();
                         menu.style.display = 'none';
                     });
@@ -679,8 +1379,9 @@
                     headerRow.appendChild(th);
                 });
                 
-                // Add column button before actions column
+                // Add column button in the header (last column before actions)
                 const addColTh = document.createElement('th');
+                addColTh.style.width = '40px';
                 const addColBtn = document.createElement('button');
                 addColBtn.className = 'add-column-btn';
                 addColBtn.innerHTML = '<i class="fas fa-plus"></i>';
@@ -689,7 +1390,12 @@
                 addColTh.appendChild(addColBtn);
                 headerRow.appendChild(addColTh);
                 
-                // Actions column header
+                // Empty column for the "+" icon in data rows
+                const emptyTh = document.createElement('th');
+                emptyTh.style.width = '40px';
+                headerRow.appendChild(emptyTh);
+                
+                // Actions column
                 const actionsTh = document.createElement('th');
                 actionsTh.className = 'actions-column';
                 actionsTh.textContent = 'Actions';
@@ -702,7 +1408,7 @@
                 const typeMap = {
                     'text': 'Text',
                     'number': 'Number',
-                    'currency': 'Currency',
+                    'currency': 'Currency (INR)',
                     'select': 'Select',
                     'checkbox': 'Checkbox',
                     'date': 'Date (dd-mm-yyyy)',
@@ -718,6 +1424,7 @@
                 if (oldType === newType) return;
                 
                 column.type = newType;
+                this.unsavedChanges = true;
                 
                 // Handle special cases
                 if (newType === 'select' && !column.options) {
@@ -745,6 +1452,7 @@
                 });
                 
                 this.renderTable();
+                this.initColumnFilterSelect();
             }
 
             editTitle(titleSpan, column, colIndex) {
@@ -785,6 +1493,7 @@
                     
                     // Update column name
                     this.editingTitle.column.name = newName;
+                    this.unsavedChanges = true;
                     
                     // Update data with new column name
                     this.data.forEach(row => {
@@ -802,10 +1511,22 @@
                         this.filters[newName] = this.filters[this.editingTitle.originalValue];
                         delete this.filters[this.editingTitle.originalValue];
                     }
+                    
+                    // Update active filters if needed
+                    if (this.activeColumnFilter === this.editingTitle.originalValue) {
+                        this.activeColumnFilter = newName;
+                    }
+                    if (this.dateFilterColumn === this.editingTitle.originalValue) {
+                        this.dateFilterColumn = newName;
+                    }
+                    if (this.numberFilterColumn === this.editingTitle.originalValue) {
+                        this.numberFilterColumn = newName;
+                    }
                 }
                 
                 this.cancelTitleEdit();
                 this.renderTable();
+                this.initColumnFilterSelect();
             }
 
             cancelTitleEdit() {
@@ -818,14 +1539,7 @@
             renderBody() {
                 this.tbody.innerHTML = '';
                 
-                let filteredData = this.data.filter(row => {
-                    if (this.filters.global) {
-                        const matches = Object.values(row).some(value => 
-                            String(value).toLowerCase().includes(this.filters.global));
-                        if (!matches) return false;
-                    }
-                    return true;
-                });
+                let filteredData = this.getFilteredData();
                 
                 if (this.sortColumn) {
                     filteredData.sort((a, b) => {
@@ -835,6 +1549,10 @@
                         
                         if (column.type === 'number' || column.type === 'currency') {
                             return this.sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+                        } else if (column.type === 'date' || column.type === 'date-us') {
+                            const dateA = new Date(aValue).getTime();
+                            const dateB = new Date(bValue).getTime();
+                            return this.sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
                         }
                         
                         const compare = String(aValue).localeCompare(String(bValue));
@@ -844,6 +1562,18 @@
                 
                 const startIdx = (this.currentPage - 1) * this.pageSize;
                 const paginatedData = filteredData.slice(startIdx, startIdx + this.pageSize);
+                
+                if (paginatedData.length === 0) {
+                    const tr = document.createElement('tr');
+                    const td = document.createElement('td');
+                    td.colSpan = this.columns.length + 2;
+                    td.textContent = 'No data found';
+                    td.style.textAlign = 'center';
+                    td.style.padding = '20px';
+                    tr.appendChild(td);
+                    this.tbody.appendChild(tr);
+                    return;
+                }
                 
                 paginatedData.forEach((row, rowIndex) => {
                     const tr = document.createElement('tr');
@@ -861,9 +1591,11 @@
                                 '<i class="far fa-square" style="color: var(--dark)"></i>';
                         } 
                         else if (col.type === 'currency') {
-                            td.textContent = row[col.name].toLocaleString('en-US', {
+                            td.textContent = row[col.name].toLocaleString('en-IN', {
                                 style: 'currency',
-                                currency: 'USD'
+                                currency: 'INR',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
                             });
                         }
                         else if (col.type === 'date') {
@@ -881,27 +1613,69 @@
                         tr.appendChild(td);
                     });
                     
-                    // Add column button before actions
-                    const addColTd = document.createElement('td');
-                    const addColBtn = document.createElement('button');
-                    addColBtn.className = 'add-column-btn';
-                    addColBtn.innerHTML = '<i class="fas fa-plus"></i>';
-                    addColBtn.title = "Add Column";
-                    addColBtn.addEventListener('click', () => this.openColumnModal());
-                    addColTd.appendChild(addColBtn);
-                    tr.appendChild(addColTd);
+                    // Empty cell for the "+" icon column (not clickable in data rows)
+                    const emptyTd = document.createElement('td');
+                    tr.appendChild(emptyTd);
                     
                     // Actions column
                     const actionsTd = document.createElement('td');
                     actionsTd.className = 'actions-column';
+                    
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'btn danger';
                     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    deleteBtn.title = "Delete row";
                     deleteBtn.addEventListener('click', () => this.deleteRow(rowIndex + startIdx));
+                    
                     actionsTd.appendChild(deleteBtn);
                     tr.appendChild(actionsTd);
                     
                     this.tbody.appendChild(tr);
+                });
+            }
+
+            getFilteredData() {
+                return this.data.filter(row => {
+                    // Apply global search filter
+                    if (this.filters.global) {
+                        const matches = Object.values(row).some(value => 
+                            String(value).toLowerCase().includes(this.filters.global));
+                        if (!matches) return false;
+                    }
+                    
+                    // Apply column-specific filters
+                    for (const [colName, filter] of Object.entries(this.filters)) {
+                        if (colName === 'global') continue;
+                        
+                        const column = this.columns.find(c => c.name === colName);
+                        if (!column) continue;
+                        
+                        const cellValue = row[colName];
+                        
+                        if (typeof filter === 'string') {
+                            // Text filter
+                            if (!String(cellValue).toLowerCase().includes(filter)) {
+                                return false;
+                            }
+                        } else if (filter.from && filter.to) {
+                            // Date range filter
+                            const cellDate = new Date(cellValue).getTime();
+                            const fromDate = new Date(filter.from).getTime();
+                            const toDate = new Date(filter.to).getTime();
+                            
+                            if (isNaN(cellDate) || cellDate < fromDate || cellDate > toDate) {
+                                return false;
+                            }
+                        } else if (filter.min !== undefined && filter.max !== undefined) {
+                            // Number range filter
+                            const numValue = parseFloat(cellValue);
+                            if (isNaN(numValue) || numValue < filter.min || numValue > filter.max) {
+                                return false;
+                            }
+                        }
+                    }
+                    
+                    return true;
                 });
             }
 
@@ -911,6 +1685,7 @@
                 
                 if (column.type === 'checkbox') {
                     row[columnName] = !row[columnName];
+                    this.unsavedChanges = true;
                     this.renderTable();
                     return;
                 }
@@ -951,8 +1726,10 @@
                         defaultDate: originalValue || new Date(),
                         onChange: (selectedDates, dateStr) => {
                             row[columnName] = selectedDates[0];
+                            this.unsavedChanges = true;
                             this.renderTable();
-                        }
+                        },
+                        theme: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
                     });
                 }
                 
@@ -969,6 +1746,7 @@
                     else {
                         row[columnName] = input.value;
                     }
+                    this.unsavedChanges = true;
                     this.renderTable();
                 };
                 
@@ -992,6 +1770,7 @@
                 newRow.ID = maxId + 1;
                 
                 this.data.unshift(newRow);
+                this.unsavedChanges = true;
                 this.currentPage = 1;
                 this.renderTable();
             }
@@ -999,6 +1778,7 @@
             deleteRow(index) {
                 if (confirm('Are you sure you want to delete this row?')) {
                     this.data.splice(index, 1);
+                    this.unsavedChanges = true;
                     
                     // Reset IDs to be sequential
                     this.data.forEach((row, idx) => {
@@ -1014,7 +1794,9 @@
             }
 
             closeModal() {
-                document.getElementById('columnModal').style.display = 'none';
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.style.display = 'none';
+                });
                 document.getElementById('columnName').value = '';
                 document.getElementById('columnType').value = 'text';
                 document.getElementById('columnOptions').value = '';
@@ -1048,7 +1830,7 @@
                     newColumn.options = options;
                 }
                 
-                // Add at the end (before the add column and actions columns)
+                // Add at the end (before the actions column)
                 this.columns.splice(this.columns.length, 0, newColumn);
                 
                 this.data.forEach(row => {
@@ -1058,8 +1840,10 @@
                                type === 'date' || type === 'date-us' ? new Date() : '';
                 });
                 
+                this.unsavedChanges = true;
                 this.closeModal();
                 this.renderTable();
+                this.initColumnFilterSelect();
             }
 
             insertColumn(index, position) {
@@ -1078,7 +1862,9 @@
                     row[newName] = '';
                 });
                 
+                this.unsavedChanges = true;
                 this.renderTable();
+                this.initColumnFilterSelect();
             }
 
             deleteColumn(index) {
@@ -1094,7 +1880,29 @@
                 }
                 
                 delete this.filters[columnName];
+                
+                if (this.activeColumnFilter === columnName) {
+                    this.activeColumnFilter = null;
+                    document.getElementById('columnFilterSelect').value = '';
+                    document.getElementById('columnFilterInput').value = '';
+                    document.getElementById('columnFilterInput').disabled = true;
+                }
+                
+                if (this.dateFilterColumn === columnName) {
+                    this.dateFilterColumn = null;
+                    document.getElementById('dateFrom').value = '';
+                    document.getElementById('dateTo').value = '';
+                }
+                
+                if (this.numberFilterColumn === columnName) {
+                    this.numberFilterColumn = null;
+                    document.getElementById('numberMin').value = '';
+                    document.getElementById('numberMax').value = '';
+                }
+                
+                this.unsavedChanges = true;
                 this.renderTable();
+                this.initColumnFilterSelect();
             }
 
             changePage(delta) {
@@ -1107,26 +1915,17 @@
                 this.renderTable();
             }
 
-            getFilteredData() {
-                return this.data.filter(row => {
-                    if (this.filters.global) {
-                        const matches = Object.values(row).some(value => 
-                            String(value).toLowerCase().includes(this.filters.global));
-                        if (!matches) return false;
-                    }
-                    return true;
-                });
-            }
-
             updatePagination() {
                 const filteredData = this.getFilteredData();
                 const totalPages = Math.ceil(filteredData.length / this.pageSize);
+                const totalRecords = filteredData.length;
                 
                 document.getElementById('pageInfo').textContent = 
                     `Page ${this.currentPage} of ${totalPages}`;
+                document.querySelector('.total-records').textContent = `Total: ${totalRecords} records`;
                 
                 document.getElementById('prevPage').disabled = this.currentPage <= 1;
-                document.getElementById('nextPage').disabled = this.currentPage >= totalPages;
+                document.getElementById('nextPage').disabled = this.currentPage >= totalPages || totalPages === 0;
             }
 
             exportToCSV() {
@@ -1154,9 +1953,9 @@
                         const column = this.columns.find(c => c.name === header);
                         
                         if (column.type === 'currency') {
-                            return value.toLocaleString('en-US', {
+                            return value.toLocaleString('en-IN', {
                                 style: 'currency',
-                                currency: 'USD'
+                                currency: 'INR'
                             });
                         }
                         else if (column.type === 'date') {
@@ -1187,7 +1986,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => new EditableTable());
+        document.addEventListener('DOMContentLoaded', () => new AdvancedDataTable());
     </script>
 </body>
 </html>
