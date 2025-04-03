@@ -1,632 +1,528 @@
-// Sample data
-let data = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active', dateJoined: '2023-01-15', salary: 75000, department: 'Engineering' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Inactive', dateJoined: '2023-02-20', salary: 65000, department: 'Marketing' },
-    { id: 3, name: 'Robert Johnson', email: 'robert@example.com', role: 'Manager', status: 'Active', dateJoined: '2022-11-05', salary: 85000, department: 'Sales' },
-    { id: 4, name: 'Emily Davis', email: 'emily@example.com', role: 'User', status: 'Active', dateJoined: '2023-03-10', salary: 60000, department: 'HR' },
-    { id: 5, name: 'Michael Brown', email: 'michael@example.com', role: 'Developer', status: 'Active', dateJoined: '2022-09-15', salary: 80000, department: 'Engineering' },
-    { id: 6, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'Designer', status: 'Inactive', dateJoined: '2023-04-22', salary: 70000, department: 'Design' },
-    { id: 7, name: 'David Taylor', email: 'david@example.com', role: 'Manager', status: 'Active', dateJoined: '2022-07-30', salary: 90000, department: 'Operations' },
-    { id: 8, name: 'Jessica Martinez', email: 'jessica@example.com', role: 'Developer', status: 'Active', dateJoined: '2023-01-10', salary: 78000, department: 'Engineering' },
-    { id: 9, name: 'Thomas Anderson', email: 'thomas@example.com', role: 'Analyst', status: 'Inactive', dateJoined: '2023-05-15', salary: 72000, department: 'Finance' },
-    { id: 10, name: 'Lisa Jackson', email: 'lisa@example.com', role: 'User', status: 'Active', dateJoined: '2023-06-01', salary: 68000, department: 'Marketing' },
-    { id: 11, name: 'William Clark', email: 'william@example.com', role: 'Developer', status: 'Active', dateJoined: '2022-12-10', salary: 82000, department: 'Engineering' },
-    { id: 12, name: 'Megan Lewis', email: 'megan@example.com', role: 'Designer', status: 'Active', dateJoined: '2023-07-15', salary: 75000, department: 'Design' },
-    { id: 13, name: 'Christopher Lee', email: 'chris@example.com', role: 'Analyst', status: 'Inactive', dateJoined: '2023-03-25', salary: 71000, department: 'Finance' },
-    { id: 14, name: 'Amanda Walker', email: 'amanda@example.com', role: 'Manager', status: 'Active', dateJoined: '2022-08-18', salary: 95000, department: 'Operations' },
-    { id: 15, name: 'Daniel Hall', email: 'daniel@example.com', role: 'Developer', status: 'Active', dateJoined: '2023-02-05', salary: 77000, department: 'Engineering' }
-];
+document.addEventListener('DOMContentLoaded', function() {
+    // Sample data - can be replaced with real data
+    const sampleData = [
+        { id: 1, text: "Sample Item 1", number: 100, category: "Type A", date: "2023-05-15", status: true },
+        { id: 2, text: "Example Data 2", number: 250, category: "Type B", date: "2023-06-20", status: false },
+        { id: 3, text: "Test Record 3", number: 75, category: "Type A", date: "2023-04-10", status: true },
+        { id: 4, text: "Demo Item 4", number: 300, category: "Type B", date: "2023-07-05", status: false },
+        { id: 5, text: "Sample Data 5", number: 150, category: "Type A", date: "2023-08-12", status: true },
+        { id: 6, text: "Another Item 6", number: 225, category: "Type B", date: "2023-09-18", status: false },
+        { id: 7, text: "More Data 7", number: 50, category: "Type A", date: "2023-10-22", status: true },
+        { id: 8, text: "Final Test 8", number: 175, category: "Type B", date: "2023-11-30", status: false },
+        { id: 9, text: "Additional 9", number: 125, category: "Type A", date: "2023-12-05", status: true },
+        { id: 10, text: "Last One 10", number: 275, category: "Type B", date: "2024-01-15", status: false }
+    ];
 
-// DOM elements
-const tableBody = document.getElementById('table-body');
-const tableHeaders = document.getElementById('table-headers');
-const globalSearch = document.getElementById('global-search');
-const searchBtn = document.getElementById('search-btn');
-const resetBtn = document.getElementById('reset-btn');
-const addRowBtn = document.getElementById('add-row-btn');
-const roleFilter = document.getElementById('role-filter');
-const statusFilter = document.getElementById('status-filter');
-const departmentFilter = document.getElementById('department-filter');
-const dateFilter = document.getElementById('date-filter');
-const salaryRange = document.getElementById('salary-range');
-const salaryValue = document.getElementById('salary-value');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const pageInfo = document.getElementById('page-info');
-const pageSize = document.getElementById('page-size');
-const editModal = document.getElementById('edit-modal');
-const editForm = document.getElementById('edit-form');
-const saveEditBtn = document.getElementById('save-edit-btn');
-const cancelEditBtn = document.getElementById('cancel-edit-btn');
-const addModal = document.getElementById('add-modal');
-const addForm = document.getElementById('add-form');
-const saveAddBtn = document.getElementById('save-add-btn');
-const cancelAddBtn = document.getElementById('cancel-add-btn');
-const closeButtons = document.querySelectorAll('.close');
-
-// State variables
-let currentPage = 1;
-let itemsPerPage = 10;
-let sortColumn = null;
-let sortDirection = 'asc';
-let filteredData = [...data];
-let searchTimeout = null;
-let currentEditId = null;
-let columnTitles = {
-    id: 'ID',
-    name: 'Name',
-    email: 'Email',
-    role: 'Role',
-    status: 'Status',
-    dateJoined: 'Join Date',
-    salary: 'Salary',
-    department: 'Department'
-};
-
-// Initialize the table
-function init() {
-    renderTableHeaders();
-    renderTable();
-    populateFilters();
-    setupEventListeners();
-}
-
-// Render table headers with editable titles
-function renderTableHeaders() {
-    tableHeaders.innerHTML = '';
-    
-    // Add regular columns
-    Object.keys(columnTitles).forEach(key => {
-        const th = document.createElement('th');
-        th.setAttribute('data-column', key);
-        th.textContent = columnTitles[key];
-        th.classList.add('editable');
-        
-        // Make header editable
-        th.addEventListener('dblclick', () => {
-            makeHeaderEditable(th, key);
-        });
-        
-        // Add sorting
-        th.addEventListener('click', () => {
-            sortData(key);
-        });
-        
-        tableHeaders.appendChild(th);
-    });
-    
-    // Add action column
-    const actionTh = document.createElement('th');
-    actionTh.textContent = 'Actions';
-    tableHeaders.appendChild(actionTh);
-}
-
-// Make table header editable
-function makeHeaderEditable(th, key) {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = columnTitles[key];
-    
-    th.innerHTML = '';
-    th.appendChild(input);
-    input.focus();
-    
-    const saveEdit = () => {
-        columnTitles[key] = input.value.trim();
-        renderTableHeaders();
+    // Table state
+    const tableState = {
+        data: [...sampleData],
+        filteredData: [...sampleData],
+        currentPage: 1,
+        rowsPerPage: 10,
+        sortColumn: null,
+        sortDirection: 'asc',
+        filters: {}
     };
-    
-    input.addEventListener('blur', saveEdit);
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            saveEdit();
-        }
-    });
-}
 
-// Render the table with current data
-function renderTable() {
-    tableBody.innerHTML = '';
-    
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
-    
-    if (paginatedData.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = Object.keys(columnTitles).length + 1;
-        td.textContent = 'No records found';
-        td.style.textAlign = 'center';
-        tr.appendChild(td);
-        tableBody.appendChild(tr);
-        return;
+    // DOM elements
+    const tableBody = document.querySelector('#data-table tbody');
+    const globalSearch = document.getElementById('global-search');
+    const searchBtn = document.getElementById('search-btn');
+    const rowsPerPage = document.getElementById('rows-per-page');
+    const addRowBtn = document.getElementById('add-row');
+    const exportCsvBtn = document.getElementById('export-csv');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const paginationInfo = document.querySelector('.pagination-info');
+    const pageNumbers = document.querySelector('.page-numbers');
+    const firstPageBtn = document.getElementById('first-page');
+    const prevPageBtn = document.getElementById('prev-page');
+    const nextPageBtn = document.getElementById('next-page');
+    const lastPageBtn = document.getElementById('last-page');
+
+    // Initialize the table
+    function initTable() {
+        renderTable();
+        setupEventListeners();
+        updatePagination();
     }
-    
-    paginatedData.forEach(row => {
-        const tr = document.createElement('tr');
+
+    // Render the table with current data
+    function renderTable() {
+        tableBody.innerHTML = '';
         
-        // Add data cells
-        Object.keys(columnTitles).forEach(key => {
-            const td = document.createElement('td');
-            td.classList.add('editable');
+        const startIdx = (tableState.currentPage - 1) * tableState.rowsPerPage;
+        const endIdx = startIdx + tableState.rowsPerPage;
+        const paginatedData = tableState.filteredData.slice(startIdx, endIdx);
+        
+        paginatedData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.dataset.id = row.id;
             
-            // Format values
-            if (key === 'salary') {
-                td.textContent = '$' + row[key].toLocaleString();
-            } else {
-                td.textContent = row[key];
-            }
+            tr.innerHTML = `
+                <td>${row.id}</td>
+                <td><span class="view-mode">${row.text}</span><input type="text" class="edit-mode" value="${row.text}" style="display: none;"></td>
+                <td><span class="view-mode">${row.number}</span><input type="number" class="edit-mode" value="${row.number}" style="display: none;"></td>
+                <td>
+                    <span class="view-mode">${row.category}</span>
+                    <select class="edit-mode" style="display: none;">
+                        <option value="Type A" ${row.category === 'Type A' ? 'selected' : ''}>Type A</option>
+                        <option value="Type B" ${row.category === 'Type B' ? 'selected' : ''}>Type B</option>
+                    </select>
+                </td>
+                <td><span class="view-mode">${formatDate(row.date)}</span><input type="date" class="edit-mode" value="${row.date}" style="display: none;"></td>
+                <td>
+                    <div class="checkbox-container">
+                        <span class="view-mode">${row.status ? '✓' : '✗'}</span>
+                        <input type="checkbox" class="edit-mode" ${row.status ? 'checked' : ''} style="display: none;">
+                    </div>
+                </td>
+                <td class="action-buttons-cell">
+                    <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                    <button class="action-btn save-btn" style="display: none;"><i class="fas fa-save"></i></button>
+                    <button class="action-btn cancel-btn" style="display: none;"><i class="fas fa-times"></i></button>
+                </td>
+            `;
             
-            // Make cell editable
-            td.addEventListener('dblclick', () => {
-                makeCellEditable(td, row, key);
-            });
-            
-            tr.appendChild(td);
+            tableBody.appendChild(tr);
         });
-        
-        // Add action buttons
-        const actionTd = document.createElement('td');
-        actionTd.className = 'action-buttons';
-        
-        const editBtn = document.createElement('button');
-        editBtn.className = 'action-btn edit-btn';
-        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-        editBtn.title = 'Edit';
-        editBtn.addEventListener('click', () => openEditModal(row));
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'action-btn delete-btn';
-        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteBtn.title = 'Delete';
-        deleteBtn.addEventListener('click', () => deleteRow(row.id));
-        
-        actionTd.appendChild(editBtn);
-        actionTd.appendChild(deleteBtn);
-        tr.appendChild(actionTd);
-        
-        tableBody.appendChild(tr);
-    });
-    
-    updatePagination();
-}
+    }
 
-// Make table cell editable
-function makeCellEditable(td, row, key) {
-    const input = document.createElement(key === 'salary' ? 'input' : key === 'dateJoined' ? 'input' : 'input');
-    input.type = key === 'salary' ? 'number' : key === 'dateJoined' ? 'date' : 'text';
-    input.value = row[key];
-    
-    td.innerHTML = '';
-    td.appendChild(input);
-    input.focus();
-    
-    const saveEdit = () => {
-        let newValue = input.value.trim();
-        
-        // Convert to number if it's the salary column
-        if (key === 'salary') {
-            newValue = Number(newValue);
-            if (isNaN(newValue)) {
-                newValue = row[key]; // Revert if invalid
-            }
-        }
-        
-        // Update data
-        row[key] = newValue;
-        
-        // Re-render cell with formatted value
-        if (key === 'salary') {
-            td.textContent = '$' + newValue.toLocaleString();
-        } else {
-            td.textContent = newValue;
-        }
-        
-        td.classList.add('editable');
-    };
-    
-    input.addEventListener('blur', saveEdit);
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            saveEdit();
-        }
-    });
-}
+    // Format date for display
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
 
-// Populate all filter dropdowns
-function populateFilters() {
-    const roles = [...new Set(data.map(item => item.role))];
-    const statuses = [...new Set(data.map(item => item.status))];
-    const departments = [...new Set(data.map(item => item.department))];
-    
-    roles.forEach(role => {
-        const option = document.createElement('option');
-        option.value = role;
-        option.textContent = role;
-        roleFilter.appendChild(option);
-    });
-    
-    statuses.forEach(status => {
-        const option = document.createElement('option');
-        option.value = status;
-        option.textContent = status;
-        statusFilter.appendChild(option);
-    });
-    
-    departments.forEach(dept => {
-        const option = document.createElement('option');
-        option.value = dept;
-        option.textContent = dept;
-        departmentFilter.appendChild(option);
-    });
-    
-    // Set up salary range display
-    salaryRange.addEventListener('input', () => {
-        salaryValue.textContent = '$' + Number(salaryRange.value).toLocaleString();
-        applyFilters();
-    });
-}
-
-// Apply all filters and search
-function applyFilters() {
-    const searchTerm = globalSearch.value.toLowerCase();
-    const minSalary = Number(salaryRange.value);
-    const filterDate = dateFilter.value ? new Date(dateFilter.value) : null;
-    
-    filteredData = data.filter(item => {
+    // Setup event listeners
+    function setupEventListeners() {
         // Global search
-        if (searchTerm) {
-            const matches = Object.values(item).some(value => 
-                String(value).toLowerCase().includes(searchTerm)
-            );
-            if (!matches) return false;
-        }
-        
-        // Role filter
-        if (roleFilter.value && item.role !== roleFilter.value) {
-            return false;
-        }
-        
-        // Status filter
-        if (statusFilter.value && item.status !== statusFilter.value) {
-            return false;
-        }
-        
-        // Department filter
-        if (departmentFilter.value && item.department !== departmentFilter.value) {
-            return false;
-        }
-        
-        // Date filter
-        if (filterDate && new Date(item.dateJoined) < filterDate) {
-            return false;
-        }
-        
-        // Salary range
-        if (item.salary < minSalary) {
-            return false;
-        }
-        
-        return true;
-    });
-    
-    // Apply sorting
-    applySorting();
-    
-    // Reset to first page
-    currentPage = 1;
-    renderTable();
-}
-
-// Reset all filters and search
-function resetFilters() {
-    globalSearch.value = '';
-    roleFilter.value = '';
-    statusFilter.value = '';
-    departmentFilter.value = '';
-    dateFilter.value = '';
-    salaryRange.value = '50000';
-    salaryValue.textContent = '$50,000';
-    
-    filteredData = [...data];
-    sortColumn = null;
-    sortDirection = 'asc';
-    
-    // Reset sort indicators
-    document.querySelectorAll('th').forEach(header => {
-        header.classList.remove('sort-asc', 'sort-desc');
-    });
-    
-    currentPage = 1;
-    renderTable();
-}
-
-// Apply sorting to filtered data
-function applySorting() {
-    if (sortColumn) {
-        filteredData.sort((a, b) => {
-            const aValue = a[sortColumn];
-            const bValue = b[sortColumn];
-            
-            // Handle numeric sorting
-            if (typeof aValue === 'number' && typeof bValue === 'number') {
-                return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-            }
-            
-            // Handle date sorting
-            if (sortColumn === 'dateJoined') {
-                const dateA = new Date(aValue);
-                const dateB = new Date(bValue);
-                return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-            }
-            
-            // Default string sorting
-            return sortDirection === 'asc' 
-                ? String(aValue).localeCompare(String(bValue))
-                : String(bValue).localeCompare(String(aValue));
+        searchBtn.addEventListener('click', applyGlobalSearch);
+        globalSearch.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') applyGlobalSearch();
         });
-    }
-}
 
-// Update sort indicators in UI
-function updateSortIndicators() {
-    document.querySelectorAll('th').forEach(header => {
-        header.classList.remove('sort-asc', 'sort-desc');
-        const column = header.getAttribute('data-column');
-        if (column === sortColumn) {
-            header.classList.add(`sort-${sortDirection}`);
-        }
-    });
-}
-
-// Handle sorting when column header is clicked
-function sortData(column) {
-    // If clicking the same column, toggle direction
-    if (sortColumn === column) {
-        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-        sortColumn = column;
-        sortDirection = 'asc';
-    }
-    
-    // Update visual indicators
-    updateSortIndicators();
-    
-    // Apply sorting and refresh
-    applySorting();
-    renderTable();
-}
-
-// Update pagination controls
-function updatePagination() {
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
-    
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-}
-
-// Delete a row
-function deleteRow(id) {
-    if (confirm('Are you sure you want to delete this record?')) {
-        data = data.filter(item => item.id !== id);
-        filteredData = filteredData.filter(item => item.id !== id);
-        renderTable();
-    }
-}
-
-// Open edit modal
-function openEditModal(row) {
-    currentEditId = row.id;
-    editForm.innerHTML = '';
-    
-    // Create form fields for each column
-    Object.keys(columnTitles).forEach(key => {
-        if (key !== 'id') { // Don't allow editing ID
-            const div = document.createElement('div');
-            div.className = 'form-group';
-            
-            const label = document.createElement('label');
-            label.textContent = columnTitles[key];
-            label.setAttribute('for', `edit-${key}`);
-            
-            let input;
-            if (key === 'role' || key === 'status' || key === 'department') {
-                input = document.createElement('select');
-                input.id = `edit-${key}`;
+        // Column sorting
+        document.querySelectorAll('th[data-sortable="true"]').forEach(th => {
+            th.addEventListener('click', function() {
+                const column = this.dataset.column;
+                const type = this.dataset.type || 'text';
                 
-                // Get unique values for this column
-                const uniqueValues = [...new Set(data.map(item => item[key]))];
-                uniqueValues.forEach(value => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = value;
-                    if (value === row[key]) option.selected = true;
-                    input.appendChild(option);
+                // Reset sort indicators
+                document.querySelectorAll('th[data-sorted]').forEach(h => {
+                    h.removeAttribute('data-sorted');
                 });
-            } else if (key === 'dateJoined') {
-                input = document.createElement('input');
-                input.type = 'date';
-                input.id = `edit-${key}`;
-                input.value = row[key];
-            } else {
-                input = document.createElement('input');
-                input.type = key === 'salary' ? 'number' : 'text';
-                input.id = `edit-${key}`;
-                input.value = row[key];
-            }
-            
-            div.appendChild(label);
-            div.appendChild(input);
-            editForm.appendChild(div);
-        }
-    });
-    
-    editModal.style.display = 'block';
-}
-
-// Save edited row
-function saveEditedRow() {
-    const row = data.find(item => item.id === currentEditId);
-    
-    Object.keys(columnTitles).forEach(key => {
-        if (key !== 'id') {
-            const input = document.getElementById(`edit-${key}`);
-            if (input) {
-                row[key] = key === 'salary' ? Number(input.value) : input.value;
-            }
-        }
-    });
-    
-    editModal.style.display = 'none';
-    renderTable();
-}
-
-// Open add modal
-function openAddModal() {
-    addForm.innerHTML = '';
-    
-    // Create form fields for each column (except ID which will be auto-generated)
-    Object.keys(columnTitles).forEach(key => {
-        if (key !== 'id') {
-            const div = document.createElement('div');
-            div.className = 'form-group';
-            
-            const label = document.createElement('label');
-            label.textContent = columnTitles[key];
-            label.setAttribute('for', `add-${key}`);
-            
-            let input;
-            if (key === 'role' || key === 'status' || key === 'department') {
-                input = document.createElement('select');
-                input.id = `add-${key}`;
                 
-                // Get unique values for this column
-                const uniqueValues = [...new Set(data.map(item => item[key]))];
-                uniqueValues.forEach(value => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = value;
-                    input.appendChild(option);
-                });
-            } else if (key === 'dateJoined') {
-                input = document.createElement('input');
-                input.type = 'date';
-                input.id = `add-${key}`;
-                input.value = new Date().toISOString().split('T')[0];
-            } else {
-                input = document.createElement('input');
-                input.type = key === 'salary' ? 'number' : 'text';
-                input.id = `add-${key}`;
+                // Determine new sort direction
+                if (tableState.sortColumn === column) {
+                    tableState.sortDirection = tableState.sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    tableState.sortColumn = column;
+                    tableState.sortDirection = 'asc';
+                }
+                
+                this.setAttribute('data-sorted', tableState.sortDirection);
+                
+                // Sort data
+                sortData(column, type, tableState.sortDirection);
+                renderTable();
+            });
+        });
+
+        // Column filters
+        document.querySelectorAll('.column-filter').forEach(input => {
+            input.addEventListener('input', function() {
+                const column = this.dataset.column;
+                const value = this.value.toLowerCase();
+                
+                if (value) {
+                    tableState.filters[column] = { type: 'text', value };
+                } else {
+                    delete tableState.filters[column];
+                }
+                
+                applyFilters();
+            });
+        });
+
+        document.querySelectorAll('.number-filter').forEach(input => {
+            input.addEventListener('input', function() {
+                const column = this.dataset.column;
+                const isMin = this.classList.contains('min');
+                
+                if (!tableState.filters[column]) {
+                    tableState.filters[column] = { type: 'number', min: null, max: null };
+                }
+                
+                if (isMin) {
+                    tableState.filters[column].min = this.value ? Number(this.value) : null;
+                } else {
+                    tableState.filters[column].max = this.value ? Number(this.value) : null;
+                }
+                
+                applyFilters();
+            });
+        });
+
+        document.querySelectorAll('.select-filter').forEach(select => {
+            select.addEventListener('change', function() {
+                const column = this.dataset.column;
+                const value = this.value;
+                
+                if (value) {
+                    tableState.filters[column] = { type: 'select', value };
+                } else {
+                    delete tableState.filters[column];
+                }
+                
+                applyFilters();
+            });
+        });
+
+        // Pagination controls
+        rowsPerPage.addEventListener('change', function() {
+            tableState.rowsPerPage = Number(this.value);
+            tableState.currentPage = 1;
+            updatePagination();
+            renderTable();
+        });
+
+        firstPageBtn.addEventListener('click', function() {
+            tableState.currentPage = 1;
+            updatePagination();
+            renderTable();
+        });
+
+        prevPageBtn.addEventListener('click', function() {
+            if (tableState.currentPage > 1) {
+                tableState.currentPage--;
+                updatePagination();
+                renderTable();
             }
+        });
+
+        nextPageBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(tableState.filteredData.length / tableState.rowsPerPage);
+            if (tableState.currentPage < totalPages) {
+                tableState.currentPage++;
+                updatePagination();
+                renderTable();
+            }
+        });
+
+        lastPageBtn.addEventListener('click', function() {
+            const totalPages = Math.ceil(tableState.filteredData.length / tableState.rowsPerPage);
+            tableState.currentPage = totalPages;
+            updatePagination();
+            renderTable();
+        });
+
+        // Add row button
+        addRowBtn.addEventListener('click', function() {
+            const newId = tableState.data.length > 0 ? 
+                Math.max(...tableState.data.map(row => row.id)) + 1 : 1;
             
-            div.appendChild(label);
-            div.appendChild(input);
-            addForm.appendChild(div);
-        }
-    });
-    
-    addModal.style.display = 'block';
-}
-
-// Add new row
-function addNewRow() {
-    const newRow = { id: Math.max(...data.map(item => item.id)) + 1 };
-    
-    Object.keys(columnTitles).forEach(key => {
-        if (key !== 'id') {
-            const input = document.getElementById(`add-${key}`);
-            if (input) {
-                newRow[key] = key === 'salary' ? Number(input.value) : input.value;
-            }
-        }
-    });
-    
-    data.push(newRow);
-    filteredData.push(newRow);
-    addModal.style.display = 'none';
-    renderTable();
-}
-
-// Setup all event listeners
-function setupEventListeners() {
-    // Search
-    searchBtn.addEventListener('click', applyFilters);
-    globalSearch.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') applyFilters();
-        
-        // Debounce the search
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
+            const newRow = {
+                id: newId,
+                text: "New Item",
+                number: 0,
+                category: "Type A",
+                date: new Date().toISOString().split('T')[0],
+                status: false
+            };
+            
+            tableState.data.unshift(newRow);
             applyFilters();
-        }, 500);
-    });
-    
-    // Reset
-    resetBtn.addEventListener('click', resetFilters);
-    
-    // Add row
-    addRowBtn.addEventListener('click', openAddModal);
-    
-    // Filters
-    roleFilter.addEventListener('change', applyFilters);
-    statusFilter.addEventListener('change', applyFilters);
-    departmentFilter.addEventListener('change', applyFilters);
-    dateFilter.addEventListener('change', applyFilters);
-    
-    // Pagination
-    prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
+            tableState.currentPage = 1;
+            updatePagination();
             renderTable();
-        }
-    });
-    
-    nextBtn.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-        }
-    });
-    
-    // Page size
-    pageSize.addEventListener('change', () => {
-        itemsPerPage = parseInt(pageSize.value);
-        currentPage = 1;
-        renderTable();
-    });
-    
-    // Edit modal
-    saveEditBtn.addEventListener('click', saveEditedRow);
-    cancelEditBtn.addEventListener('click', () => {
-        editModal.style.display = 'none';
-    });
-    
-    // Add modal
-    saveAddBtn.addEventListener('click', addNewRow);
-    cancelAddBtn.addEventListener('click', () => {
-        addModal.style.display = 'none';
-    });
-    
-    // Close modals when clicking X
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            editModal.style.display = 'none';
-            addModal.style.display = 'none';
+            
+            // Automatically put the new row in edit mode
+            const firstRow = tableBody.querySelector('tr');
+            if (firstRow) {
+                toggleEditMode(firstRow, true);
+            }
         });
-    });
-    
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === editModal) {
-            editModal.style.display = 'none';
-        }
-        if (e.target === addModal) {
-            addModal.style.display = 'none';
-        }
-    });
-}
 
-// Initialize the app
-init();
+        // Export button
+        exportCsvBtn.addEventListener('click', exportToCsv);
+
+        // Reset filters button
+        resetFiltersBtn.addEventListener('click', function() {
+            // Reset all filters
+            tableState.filters = {};
+            document.querySelectorAll('.column-filter, .number-filter').forEach(input => {
+                input.value = '';
+            });
+            document.querySelectorAll('.select-filter').forEach(select => {
+                select.value = '';
+            });
+            globalSearch.value = '';
+            
+            applyFilters();
+        });
+
+        // Table row actions (using event delegation)
+        tableBody.addEventListener('click', function(e) {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            
+            const rowId = Number(row.dataset.id);
+            
+            // Edit button
+            if (e.target.closest('.edit-btn')) {
+                toggleEditMode(row, true);
+            }
+            
+            // Delete button
+            else if (e.target.closest('.delete-btn')) {
+                if (confirm('Are you sure you want to delete this row?')) {
+                    deleteRow(rowId);
+                }
+            }
+            
+            // Save button
+            else if (e.target.closest('.save-btn')) {
+                saveRow(row, rowId);
+            }
+            
+            // Cancel button
+            else if (e.target.closest('.cancel-btn')) {
+                toggleEditMode(row, false);
+            }
+        });
+    }
+
+    // Toggle edit mode for a row
+    function toggleEditMode(row, enable) {
+        const viewCells = row.querySelectorAll('.view-mode');
+        const editCells = row.querySelectorAll('.edit-mode');
+        const editBtn = row.querySelector('.edit-btn');
+        const deleteBtn = row.querySelector('.delete-btn');
+        const saveBtn = row.querySelector('.save-btn');
+        const cancelBtn = row.querySelector('.cancel-btn');
+        
+        if (enable) {
+            viewCells.forEach(cell => cell.style.display = 'none');
+            editCells.forEach(cell => cell.style.display = '');
+            editBtn.style.display = 'none';
+            deleteBtn.style.display = 'none';
+            saveBtn.style.display = '';
+            cancelBtn.style.display = '';
+        } else {
+            viewCells.forEach(cell => cell.style.display = '');
+            editCells.forEach(cell => cell.style.display = 'none');
+            editBtn.style.display = '';
+            deleteBtn.style.display = '';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+    }
+
+    // Save edited row
+    function saveRow(row, rowId) {
+        const text = row.querySelector('td:nth-child(2) .edit-mode').value;
+        const number = Number(row.querySelector('td:nth-child(3) .edit-mode').value);
+        const category = row.querySelector('td:nth-child(4) .edit-mode').value;
+        const date = row.querySelector('td:nth-child(5) .edit-mode').value;
+        const status = row.querySelector('td:nth-child(6) .edit-mode').checked;
+        
+        const rowIndex = tableState.data.findIndex(r => r.id === rowId);
+        if (rowIndex !== -1) {
+            tableState.data[rowIndex] = {
+                id: rowId,
+                text,
+                number,
+                category,
+                date,
+                status
+            };
+            
+            applyFilters();
+            toggleEditMode(row, false);
+            renderTable();
+        }
+    }
+
+    // Delete a row
+    function deleteRow(rowId) {
+        tableState.data = tableState.data.filter(row => row.id !== rowId);
+        applyFilters();
+        
+        // Adjust current page if needed
+        const totalPages = Math.ceil(tableState.filteredData.length / tableState.rowsPerPage);
+        if (tableState.currentPage > totalPages) {
+            tableState.currentPage = Math.max(1, totalPages);
+        }
+        
+        updatePagination();
+        renderTable();
+    }
+
+    // Apply global search
+    function applyGlobalSearch() {
+        const searchTerm = globalSearch.value.toLowerCase();
+        
+        if (searchTerm) {
+            tableState.filters.global = { type: 'global', value: searchTerm };
+        } else {
+            delete tableState.filters.global;
+        }
+        
+        applyFilters();
+    }
+
+    // Apply all filters
+    function applyFilters() {
+        let filtered = [...tableState.data];
+        
+        // Apply each filter
+        for (const [column, filter] of Object.entries(tableState.filters)) {
+            if (filter.type === 'global') {
+                const searchTerm = filter.value;
+                filtered = filtered.filter(row => {
+                    return Object.values(row).some(value => 
+                        String(value).toLowerCase().includes(searchTerm)
+                    );
+                });
+            } 
+            else if (filter.type === 'text') {
+                filtered = filtered.filter(row => {
+                    const rowValue = getRowValue(row, column);
+                    return String(rowValue).toLowerCase().includes(filter.value);
+                });
+            } 
+            else if (filter.type === 'number') {
+                filtered = filtered.filter(row => {
+                    const rowValue = Number(getRowValue(row, column));
+                    if (filter.min !== null && rowValue < filter.min) return false;
+                    if (filter.max !== null && rowValue > filter.max) return false;
+                    return true;
+                });
+            } 
+            else if (filter.type === 'select') {
+                filtered = filtered.filter(row => {
+                    const rowValue = getRowValue(row, column);
+                    return rowValue === filter.value;
+                });
+            }
+        }
+        
+        tableState.filteredData = filtered;
+        tableState.currentPage = 1;
+        updatePagination();
+        renderTable();
+    }
+
+    // Helper to get row value by column index
+    function getRowValue(row, column) {
+        const columns = ['id', 'text', 'number', 'category', 'date', 'status'];
+        return row[columns[column]];
+    }
+
+    // Sort data
+    function sortData(column, type, direction) {
+        const columns = ['id', 'text', 'number', 'category', 'date', 'status'];
+        const key = columns[column];
+        
+        tableState.filteredData.sort((a, b) => {
+            let valA = a[key];
+            let valB = b[key];
+            
+            if (type === 'number') {
+                valA = Number(valA);
+                valB = Number(valB);
+                return direction === 'asc' ? valA - valB : valB - valA;
+            } 
+            else if (type === 'date') {
+                valA = new Date(valA);
+                valB = new Date(valB);
+                return direction === 'asc' ? valA - valB : valB - valA;
+            } 
+            else if (type === 'boolean') {
+                valA = valA ? 1 : 0;
+                valB = valB ? 1 : 0;
+                return direction === 'asc' ? valA - valB : valB - valA;
+            } 
+            else {
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+                return direction === 'asc' ? 
+                    valA.localeCompare(valB) : valB.localeCompare(valA);
+            }
+        });
+    }
+
+    // Update pagination controls
+    function updatePagination() {
+        const totalRows = tableState.filteredData.length;
+        const totalPages = Math.ceil(totalRows / tableState.rowsPerPage);
+        
+        // Update pagination info
+        const startRow = (tableState.currentPage - 1) * tableState.rowsPerPage + 1;
+        const endRow = Math.min(startRow + tableState.rowsPerPage - 1, totalRows);
+        paginationInfo.textContent = `Showing ${startRow} to ${endRow} of ${totalRows} entries`;
+        
+        // Update page numbers
+        pageNumbers.innerHTML = '';
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, tableState.currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = 'page-number';
+            if (i === tableState.currentPage) {
+                pageBtn.classList.add('active');
+            }
+            pageBtn.textContent = i;
+            pageBtn.addEventListener('click', () => {
+                tableState.currentPage = i;
+                updatePagination();
+                renderTable();
+            });
+            pageNumbers.appendChild(pageBtn);
+        }
+        
+        // Update button states
+        firstPageBtn.disabled = tableState.currentPage === 1;
+        prevPageBtn.disabled = tableState.currentPage === 1;
+        nextPageBtn.disabled = tableState.currentPage === totalPages || totalPages === 0;
+        lastPageBtn.disabled = tableState.currentPage === totalPages || totalPages === 0;
+    }
+
+    // Export to CSV
+    function exportToCsv() {
+        const headers = ['ID', 'Text Field', 'Number', 'Category', 'Date', 'Status'];
+        const rows = tableState.filteredData.map(row => [
+            row.id,
+            `"${row.text.replace(/"/g, '""')}"`,
+            row.number,
+            row.category,
+            formatDate(row.date),
+            row.status ? 'Active' : 'Inactive'
+        ]);
+        
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'table_data.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Initialize the table
+    initTable();
+});
