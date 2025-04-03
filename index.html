@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Data Table</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Employee Data</h1>
+        
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="global-search" placeholder="Search all columns...">
+                <button id="search-btn"><i class="fas fa-search"></i></button>
+                <button id="reset-btn"><i class="fas fa-sync-alt"></i></button>
+                <button id="add-row-btn"><i class="fas fa-plus"></i> Add Row</button>
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="role-filter">Role</label>
+                    <select id="role-filter">
+                        <option value="">All Roles</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter">
+                        <option value="">All Statuses</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="department-filter">Department</label>
+                    <select id="department-filter">
+                        <option value="">All Departments</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="date-filter">Joined After</label>
+                    <input type="date" id="date-filter">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="salary-range">Salary Range</label>
+                    <div class="range-slider">
+                        <input type="range" id="salary-range" min="50000" max="150000" step="5000" value="50000">
+                        <span id="salary-value">$50,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="data-table">
+                <thead>
+                    <tr id="table-headers">
+                        <!-- Headers will be populated by JavaScript -->
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Data will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination">
+            <button id="prev-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+            <span id="page-info">Page 1 of 1</span>
+            <button id="next-btn">Next <i class="fas fa-chevron-right"></i></button>
+            <select id="page-size">
+                <option value="5">5 per page</option>
+                <option value="10" selected>10 per page</option>
+                <option value="20">20 per page</option>
+                <option value="50">50 per page</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Row</h2>
+            <form id="edit-form">
+                <!-- Form fields will be populated by JavaScript -->
+            </form>
+            <div class="modal-buttons">
+                <button id="save-edit-btn">Save Changes</button>
+                <button id="cancel-edit-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Row Modal -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Row</h2>
+            <form id="add-form">
+                <!-- Form fields will be populated by JavaScript -->
+            </form>
+            <div class="modal-buttons">
+                <button id="save-add-btn">Add Row</button>
+                <button id="cancel-add-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
