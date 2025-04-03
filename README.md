@@ -7,8 +7,7 @@ Author2 : Safiya
 Problem statement : Develop a responsive frontend component that displays tabular data with advanced user interaction features, including filtering, sorting, and search.
 <br>
 Technologies used : HTML5, CSS3, Java script
-
-```markdown
+<hr>
 # Advanced Data Table
 
 A responsive frontend component that displays tabular data with advanced user interaction features including filtering, sorting, and search capabilities.
