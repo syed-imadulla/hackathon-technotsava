@@ -32,28 +32,28 @@
             --gradient-secondary: linear-gradient(135deg, #00b894 0%, #55efc4 100%);
         }
 
-        /* Dark mode variables */
+        /* Dark mode variables - Updated colors */
         .dark-mode {
-            --primary: #a29bfe;
-            --secondary: #55efc4;
+            --primary: #8c7ae6;
+            --secondary: #00cec9;
             --danger: #ff7675;
             --warning: #ffeaa7;
             --info: #74b9ff;
             --light: #636e72;
             --dark: #f8f9fa;
-            --border: #636e72;
+            --border: #57606f;
             --text-light: #f8f9fa;
             --text-dark: #2d3436;
             --bg-light: #1e272e;
-            --bg-dark: #ffffff;
+            --bg-dark: #2d3436;
             --card-bg-light: #2d3436;
-            --card-bg-dark: #ffffff;
-            --border-light: #636e72;
+            --card-bg-dark: #1e272e;
+            --border-light: #57606f;
             --border-dark: #dfe6e9;
             --navbar-light: #0984e3;
             --navbar-dark: #6c5ce7;
-            --gradient-primary: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
-            --gradient-secondary: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            --gradient-primary: linear-gradient(135deg, #8c7ae6 0%, #6c5ce7 100%);
+            --gradient-secondary: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
         }
 
         * {
@@ -352,7 +352,7 @@
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             z-index: 1000;
-            min-width: 220px;
+            width: 220px; /* Fixed width */
             display: none;
             color: var(--text-light);
             top: 100%;
@@ -408,7 +408,7 @@
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             z-index: 1001;
-            min-width: 200px;
+            width: 200px; /* Fixed width */
             display: none;
             left: 100%;
             top: 0;
@@ -463,11 +463,6 @@
 
         td.editable:hover {
             background-color: rgba(108, 92, 231, 0.1);
-        }
-
-        .actions-column {
-            width: 120px;
-            text-align: center;
         }
 
         /* Pagination styles */
@@ -1568,7 +1563,7 @@
                     headerRow.appendChild(th);
                 });
                 
-                // Add column button in the header (last column before actions)
+                // Add column button in the header (last column)
                 const addColTh = document.createElement('th');
                 addColTh.style.width = '40px';
                 const addColBtn = document.createElement('button');
@@ -1578,17 +1573,6 @@
                 addColBtn.addEventListener('click', () => this.openColumnModal());
                 addColTh.appendChild(addColBtn);
                 headerRow.appendChild(addColTh);
-                
-                // Empty column for the "+" icon in data rows
-                const emptyTh = document.createElement('th');
-                emptyTh.style.width = '40px';
-                headerRow.appendChild(emptyTh);
-                
-                // Actions column
-                const actionsTh = document.createElement('th');
-                actionsTh.className = 'actions-column';
-                actionsTh.textContent = 'Actions';
-                headerRow.appendChild(actionsTh);
                 
                 this.thead.appendChild(headerRow);
             }
@@ -1755,7 +1739,7 @@
                 if (paginatedData.length === 0) {
                     const tr = document.createElement('tr');
                     const td = document.createElement('td');
-                    td.colSpan = this.columns.length + 2;
+                    td.colSpan = this.columns.length + 1;
                     td.textContent = 'No data found';
                     td.style.textAlign = 'center';
                     td.style.padding = '20px';
@@ -1806,19 +1790,6 @@
                     // Empty cell for the "+" icon column (not clickable in data rows)
                     const emptyTd = document.createElement('td');
                     tr.appendChild(emptyTd);
-                    
-                    // Actions column
-                    const actionsTd = document.createElement('td');
-                    actionsTd.className = 'actions-column';
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'btn danger';
-                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                    deleteBtn.title = "Delete row";
-                    deleteBtn.addEventListener('click', () => this.deleteRow(rowIndex + startIdx));
-                    
-                    actionsTd.appendChild(deleteBtn);
-                    tr.appendChild(actionsTd);
                     
                     this.tbody.appendChild(tr);
                 });
